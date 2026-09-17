@@ -60,7 +60,7 @@ class AttendancePage extends StatelessWidget {
     ])),
     const SectionTitle('September 2026 · Sample month'),
     CampusCard(child: Column(children: [
-      const Row(children: [for (final day in ['M', 'T', 'W', 'T', 'F', 'S', 'S']) Expanded(child: Center(child: Text(day, style: TextStyle(color: CampusColors.muted))))]),
+      Row(children: [for (final day in const ['M', 'T', 'W', 'T', 'F', 'S', 'S']) Expanded(child: Center(child: Text(day, style: const TextStyle(color: CampusColors.muted))))]),
       const SizedBox(height: 12),
       GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: 35, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 6, crossAxisSpacing: 6), itemBuilder: (_, index) {
         final day = index;
