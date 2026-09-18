@@ -87,7 +87,13 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+    final previousHandler = FlutterError.onError;
+    FlutterError.onError = (details) {
+      FlutterError.dumpErrorToConsole(details, forceReport: true);
+      previousHandler?.call(details);
+    };
     await enterDemo(tester);
+    FlutterError.onError = previousHandler;
     expect(tester.takeException(), isNull);
     await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -550));
     await tester.pumpAndSettle();
