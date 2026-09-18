@@ -36,7 +36,7 @@ class WelcomeScreen extends StatelessWidget {
     Container(
       height: 240,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(36), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF174B46), Color(0xFF398B7C)])),
-      child: Stack(children: [
+      child: Stack(fit: StackFit.expand, children: [
         Positioned(right: -32, top: -30, child: Container(width: 200, height: 200, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .07)))),
         const Positioned(right: 28, bottom: 34, child: Icon(Icons.school_outlined, size: 140, color: Color(0xFFB6D6B8))),
         const Padding(padding: EdgeInsets.all(28), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
