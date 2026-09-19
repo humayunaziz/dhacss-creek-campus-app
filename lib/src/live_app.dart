@@ -114,7 +114,7 @@ class _SchoolDashboardState extends State<SchoolDashboard> {
   void initState() { super.initState(); data = widget.repository.load(); }
   Future<void> refresh() async {
     final next = widget.repository.load();
-    setState(() => data = next);
+    setState(() { data = next; });
     try { await next; } catch (_) { /* FutureBuilder presents the retry state. */ }
   }
   Future<void> logout() async {
