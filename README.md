@@ -71,8 +71,16 @@ GitHub Actions runs Flutter analysis and tests, builds Android and web, and test
 SQL isolation in a disposable PostgreSQL database. It uploads the APK, web build,
 coverage and resolved dependency lockfile. The Supabase package is pinned exactly;
 the CI-resolved `pubspec.lock` is committed for reproducible dependency resolution.
-CI builds without Supabase defines initially and therefore opens in demo-capable,
-unconfigured mode. Configure the public project URL/key at build time for a live build.
+CI builds with `--dart-define-from-file=config/supabase.json`, which contains only
+the project's public URL and publishable client key. No privileged key belongs there.
+The hosted project is `dhacss-connect` in `Dhacss Education Dte` (Singapore).
+Its initial schema is deployed and the hosted SQL access-control tests pass.
+Initial account provisioning and dashboard Auth settings still require setup;
+the web portal build is not yet publicly hosted. To run against this backend:
+
+```sh
+flutter run --dart-define-from-file=config/supabase.json
+```
 
 This is the first backend milestone, not a production-complete school system.
 Verify the hosted Auth/Data API configuration and access rules with separate parent,
