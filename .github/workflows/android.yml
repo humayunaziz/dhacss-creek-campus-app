@@ -28,14 +28,26 @@ jobs:
           flutter-version: '3.35.7'
           channel: stable
           cache: true
-      - name: Generate Android platform wrapper
-        run: flutter create --platforms=android --org=pk.edu.dhacss --project-name=dhacss_creek_campus_app --no-pub .
+      - name: Generate platform wrappers
+        run: flutter create --platforms=android,web --org=pk.edu.dhacss --project-name=dhacss_creek_campus_app --no-pub .
       - name: Resolve packages
         run: flutter pub get
+      - name: Upload dependency lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-lockfile
+          path: pubspec.lock
       - name: Static analysis
         run: flutter analyze
       - name: Unit and widget tests
         run: flutter test --coverage
+      - name: Build web admin portal
+        run: flutter build web
+      - name: Upload web portal
+        uses: actions/upload-artifact@v4
+        with:
+          name: school-web-portal
+          path: build/web
       - name: Build installable debug APK
         run: flutter build apk --debug
       - name: Upload APK
@@ -51,3 +63,27 @@ jobs:
         with:
           name: test-coverage
           path: coverage/lcov.info
+
+  database-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: school_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify campus and parent data isolation
+        env:
+          DATABASE_URL: postgres://postgres:local-test-only@localhost:5432/school_test
+          ALLOW_DISPOSABLE_DATABASE: '1'
+        run: bash backend/test.sh

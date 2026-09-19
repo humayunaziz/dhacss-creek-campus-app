@@ -1,99 +1,79 @@
-# DHACSS Creek Campus · Flutter prototype
+# DHACSS Connect — multi-campus Flutter app
 
-A friendly, contemporary parent/student app concept: deep green, warm ivory, soft mint/lilac cards, generous spacing, Material 3 navigation and reusable components. Built with Flutter, with no third-party runtime dependencies or proprietary image assets.
+The app includes an offline demonstration and the first connected school workflow.
+The connected workflow supports email/password login, head-office campus creation,
+campus-scoped student creation, linking an existing parent account to a student,
+and the parent's actual linked-child dashboard. The same Flutter app runs on Android
+and web. Attendance, fees, homework, messages, transport, and payments remain demo-only;
+the connected dashboard does not invent information for those features.
 
-This is an **interactive, offline demo**, not an official school service. All student identities, fees, marks, messages, routes and announcements are fictional examples. Nothing is submitted to the school, and no payment is processed.
+## First hosted setup
 
-## Included
+1. Create a free Supabase project under your own organization. No domain is required;
+   Supabase supplies the HTTPS database/API endpoint. Free quotas and inactivity policies apply.
+2. Apply `backend/schema.sql` **once to a new project** using the Supabase SQL editor.
+   Do not run the disposable test harness against a hosted project.
+3. In Authentication settings, disable public signup for this school-managed pilot.
+   Create confirmed test accounts through Authentication → Users. Use test data first.
+4. Copy the intended head-office account UUID, then run this trusted bootstrap SQL:
 
-- Welcome/onboarding and one-tap parent demo entry. No real authentication yet.
-- Five destinations: Home, Academics, Services, Messages and Profile.
-- Two-child selector; independent homework, payment and chat state per child.
-- Home dashboard, sample attendance calendar, weekday timetable and results.
-- Homework completion toggles, sample fee invoice and explicit demo payment confirmation/receipt.
-- Teacher/office conversations with local-only message composition.
-- Leave request form with reason validation, date range picker and local request history.
-- Static transport itinerary, notifications and campus information.
-- Responsive scrollable layouts, bounded tablet content width, accessible button tooltips.
-- Unit/widget tests and GitHub Actions APK build workflow.
+   ```sql
+   insert into public.staff_memberships(user_id, campus_id, role)
+   values ('HEAD_OFFICE_AUTH_USER_UUID', null, 'head_office');
+   ```
 
-## Run locally
+5. Sign in as head office and create the campus. Assign a campus administrator using
+   the SQL editor with a verified account UUID and the correct campus UUID:
 
-Install Flutter **3.35.7** (the CI-pinned SDK) and an Android SDK/emulator or use an Android device with USB debugging. Dart comes with Flutter.
+   ```sql
+   insert into public.staff_memberships(user_id, campus_id, role)
+   values ('CAMPUS_ADMIN_AUTH_USER_UUID', 'CAMPUS_UUID', 'campus_admin');
+   ```
 
-The repository contains the app source. Generate Flutter's standard Android platform files once after cloning; this avoids maintaining hand-written native build scaffolding:
+6. Sign in as that administrator, add a student, then use **Link parent** with the
+   existing parent's Authentication UUID. Verify the parent's identity before linking.
+   Sign in as the parent to see that child. Password resets/account provisioning are
+   managed through Supabase for this milestone; self-service invitations come later.
+
+Staff memberships cannot be edited by the app. Row-level security in PostgreSQL
+restricts parents to linked students and campus administrators to assigned campuses.
+The SQL test suite attempts cross-campus reads/writes, escalation and anonymous access.
+
+## Run or build
+
+Use Flutter 3.35.7 (Dart 3.9). Generate platform wrappers once:
 
 ```sh
-flutter create --platforms=android --org=pk.edu.dhacss --project-name=dhacss_creek_campus_app --no-pub .
+flutter create --platforms=android,web --org=pk.edu.dhacss --project-name=dhacss_creek_campus_app --no-pub .
 flutter pub get
-flutter run
+flutter run --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ```
 
-The create command preserves existing app source and test files. Do not add `--overwrite`.
-
-For a browser preview, generate the web wrapper too:
-
-```sh
-flutter create --platforms=web --project-name=dhacss_creek_campus_app --no-pub .
-flutter pub get
-flutter run -d chrome
-```
-
-## Check and build
+Use the **publishable key only**, never a secret/service-role key. These defines are
+embedded in the client and are public; database access relies on Auth and RLS.
+Without both values the build explicitly offers the offline demo, with no live login.
 
 ```sh
-dart format lib test
 flutter analyze
-flutter test --coverage
-flutter build apk --debug
+flutter test
+flutter build apk --debug --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
+flutter build web --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ```
 
-APK: `build/app/outputs/flutter-apk/app-debug.apk`.
+The generated web folder can be deployed to Cloudflare Pages using its provided
+`pages.dev` address. Hosting is not configured by committing this code. Android
+release distribution still requires signing and a persistent Internet permission
+in the release platform manifest; the current CI APK is a debug test build.
 
-The debug APK is for device testing only. Before production distribution, configure your approved application ID, app label/icons, release signing, privacy policies and deployment pipeline.
+## Automated checks and deliverables
 
-## Get the APK through GitHub
+GitHub Actions runs Flutter analysis and tests, builds Android and web, and tests
+SQL isolation in a disposable PostgreSQL database. It uploads the APK, web build,
+coverage and resolved dependency lockfile. The Supabase package is pinned exactly;
+commit the generated `pubspec.lock` after the first successful dependency resolution.
+CI builds without Supabase defines initially and therefore opens in demo-capable,
+unconfigured mode. Configure the public project URL/key at build time for a live build.
 
-Push the repository to `main`. In **Actions → Flutter checks and Android APK**, open the successful run, then download **creek-campus-prototype-android** under Artifacts. Unzip it and install `app-debug.apk` on your Android phone. Android may ask permission to install from your browser/file manager. Use only the artifact built from your own verified repository.
-
-The workflow can also be started from **Run workflow**. It generates Android scaffolding, resolves dependencies, runs analysis/tests and builds an APK. A workflow file being present does not mean that a build has passed: inspect the actual run result.
-
-## Structure
-
-```text
-lib/
-  main.dart             Entry point
-  src/
-    app.dart            Welcome, app shell, dashboard, child selector
-    data.dart           Typed sample models and observable session state
-    screens.dart        Academic, service, messaging and profile screens
-    theme.dart          Material 3 theme and colour tokens
-    widgets.dart        Reusable cards, status pills and page layouts
-test/
-  state_test.dart        Student-state isolation and session tests
-  widget_test.dart       Navigation, interactions and viewport smoke tests
-.github/workflows/
-  android.yml           SDK-pinned checks and debug APK artifact
-```
-
-## Prototype boundaries
-
-State is kept in memory and resets after the application restarts. Exiting the demo returns to onboarding without clearing the current session's samples. The partial-month attendance calendar and term attendance percentages are separate illustrative datasets. Timetable content is reused across sample students; results and state are student-specific.
-
-No real sign-in, school API/Odoo integration, secure credential storage, database, push notifications, maps/GPS, file submission or payment gateway is implemented. The app does not request location, contacts, microphone or camera permissions. Official campus logos, photography and approved copy can be supplied later. Campus cards do not claim verified facilities or scheduled events.
-
-## Verification status at creation
-
-Flutter and Dart were not installed in the creation environment, so local analysis, widget tests and APK compilation could not be executed there. Automated checks are provided for the configured GitHub Actions runner; confirm their result before distributing a build. Source was manually reviewed, but it must not be treated as compiler-verified until CI succeeds.
-
-## Next implementation phase
-
-1. Confirm approved campus branding and user journeys.
-2. Add secure parent/student authentication and role-scoped APIs.
-3. Replace sample repositories with school/Odoo endpoints.
-4. Add server-backed attendance, homework attachments, messaging and leave approvals.
-5. Integrate a vetted payment gateway with server-side verification and reconciliation.
-6. Add verified transport data and opt-in notifications.
-7. Perform device/accessibility/security testing and release-sign the app.
-
-Official campus website: https://creekcampus.dhacsskarachi.edu.pk/
+This is the first backend milestone, not a production-complete school system.
+Verify the hosted Auth/Data API configuration and access rules with separate parent,
+campus-admin and head-office accounts before adding real student information.

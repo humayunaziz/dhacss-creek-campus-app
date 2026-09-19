@@ -53,7 +53,7 @@ class WelcomeScreen extends StatelessWidget {
     const Wrap(spacing: 8, runSpacing: 8, children: [StatusPill('Academics'), StatusPill('School updates', color: CampusColors.lavender), StatusPill('Fees & services', color: CampusColors.peach)]),
     const SizedBox(height: 32),
     FilledButton.icon(key: const Key('enter-demo'), onPressed: onEnter, icon: const Icon(Icons.arrow_forward_rounded), label: const Text('Explore parent demo')),
-    const DemoNote(text: 'Interactive prototype · No login or real student data required.\nOfficial authentication will be added during API integration.'),
+    const DemoNote(text: 'Interactive prototype · No login or real student data required.\nReturn to the login screen to use a connected school account.'),
   ])));
 }
 
