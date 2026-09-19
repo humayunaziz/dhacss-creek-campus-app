@@ -136,12 +136,14 @@ class _SchoolDashboardState extends State<SchoolDashboard> {
     ]),
     body: FutureBuilder<SchoolSnapshot>(future: data, builder: (context, result) {
       if (result.connectionState != ConnectionState.done) return const Center(child: CircularProgressIndicator());
-      if (result.hasError) return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(
+      if (result.hasError) {
+        return Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(
         mainAxisSize: MainAxisSize.min, children: [
           const Text('We could not load your school information. Check your connection and try again.'),
           const SizedBox(height: 16), FilledButton(onPressed: refresh, child: const Text('Try again')),
         ],
-      )));
+        )));
+      }
       final snapshot = result.data!;
       return RefreshIndicator(onRefresh: refresh, child: ListView(padding: const EdgeInsets.all(24), children: [
         Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 900), child: Column(

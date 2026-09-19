@@ -70,10 +70,16 @@ in the release platform manifest; the current CI APK is a debug test build.
 GitHub Actions runs Flutter analysis and tests, builds Android and web, and tests
 SQL isolation in a disposable PostgreSQL database. It uploads the APK, web build,
 coverage and resolved dependency lockfile. The Supabase package is pinned exactly;
-commit the generated `pubspec.lock` after the first successful dependency resolution.
+the CI-resolved `pubspec.lock` is committed for reproducible dependency resolution.
 CI builds without Supabase defines initially and therefore opens in demo-capable,
 unconfigured mode. Configure the public project URL/key at build time for a live build.
 
 This is the first backend milestone, not a production-complete school system.
 Verify the hosted Auth/Data API configuration and access rules with separate parent,
 campus-admin and head-office accounts before adding real student information.
+
+The first dashboard uses single-page API reads (subject to the project's response-row
+limit). It is suitable for a small pilot; add pagination/search before loading full
+campus rosters. Staff creation and linking are available; editing, transfer, bulk
+import, account recovery UI, and revoking links from the UI are future work. A trusted
+administrator can revoke a link in the Supabase dashboard meanwhile.
