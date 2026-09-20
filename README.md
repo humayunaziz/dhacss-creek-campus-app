@@ -88,6 +88,19 @@ campus-admin and head-office accounts before adding real student information.
 
 The first dashboard uses single-page API reads (subject to the project's response-row
 limit). It is suitable for a small pilot; add pagination/search before loading full
-campus rosters. Staff creation and linking are available; editing, transfer, bulk
-import, account recovery UI, and revoking links from the UI are future work. A trusted
+campus rosters. Staff creation and linking are available; editing, transfer, account recovery UI, and revoking links from the UI are future work. A trusted
 administrator can revoke a link in the Supabase dashboard meanwhile.
+
+## Angular staff portal
+
+The new [Angular portal](admin-web/README.md) provides campus-scoped staff login,
+CSV/Excel imports for campuses, students and parent contacts, confirmed parent
+account linking, teacher class assignments, attendance entry/CSV upload, and homework
+publishing. Apply `backend/portal.sql` once after the initial schema for a new backend.
+This migration is already deployed to the connected hosted project.
+
+The portal workflow tests the Angular imports/build and database access isolation.
+Its downloadable static build is ready for hosting; no public portal URL is configured.
+Flutter's existing attendance and homework screens still use demonstration data;
+the next mobile integration must read these new tables. See the portal README for
+import templates, staff provisioning, hosting steps and pilot limitations.
