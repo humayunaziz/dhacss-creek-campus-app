@@ -344,6 +344,7 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
       if (mounted) await refresh();
     } catch (_) {
       if (mounted)
+        {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -351,6 +352,7 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
             ),
           ),
         );
+        }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -392,9 +394,11 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
       ),
     );
     if (confirm == true)
+      {
       await work(
         () => widget.services.remove(widget.table, row['id'] as String),
       );
+      }
   }
 
   Future<void> decision(Record row, String status) async {
@@ -424,7 +428,9 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
           FilledButton(
             onPressed: () {
               if (status == 'rejected' && controller.text.trim().length < 3)
+                {
                 return;
+                }
               Navigator.pop(context, true);
             },
             child: const Text('Confirm'),
@@ -435,7 +441,9 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
     final note = controller.text.trim();
     controller.dispose();
     if (confirmed == true)
+      {
       await work(() => widget.services.reviewLeave(row['id'], status, note));
+      }
   }
 
   String title(Record r) => switch (widget.table) {
@@ -470,7 +478,9 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
       lastDate: DateTime(2100),
     );
     if (date != null && mounted)
+      {
       setState(() => month = date.toIso8601String().substring(0, 7));
+      }
   }
 
   @override
@@ -502,8 +512,11 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done)
+          {
           return const Center(child: CircularProgressIndicator());
+          }
         if (snapshot.hasError)
+          {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -516,6 +529,7 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
               ],
             ),
           );
+          }
         final records = snapshot.data!
             .where(
               (r) =>
@@ -603,11 +617,13 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
                                 ),
                               );
                               if (context.mounted)
+                                {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Bill details copied.'),
                                   ),
                                 );
+                                }
                             },
                             icon: const Icon(Icons.copy),
                             label: const Text('Copy bill details'),
@@ -750,7 +766,9 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
             (num.tryParse(v ?? '') == null ||
                 !num.parse(v!).isFinite ||
                 num.parse(v) < 0))
+          {
           return 'Enter a valid positive number or zero';
+          }
         return null;
       },
     ),
@@ -774,11 +792,13 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
                 lastDate: DateTime(2100),
               );
               if (selected != null && mounted)
+                {
                 setState(
                   () => fields[key]!.text = selected
                       .toIso8601String()
                       .substring(0, 10),
                 );
+                }
             },
       validator: (v) =>
           DateTime.tryParse(v ?? '') == null ? 'Select a date' : null,
@@ -798,7 +818,9 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
       switch (table) {
         case 'attendance':
           if (value('attendance_date').compareTo(schoolToday()) > 0)
+            {
             throw const FormatException('Attendance cannot be in the future.');
+            }
           await widget.services.attendance(
             s['id'],
             value('attendance_date'),
@@ -808,9 +830,11 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
           return;
         case 'school_publications':
           if (value('ends_on').compareTo(value('starts_on')) < 0)
+            {
             throw const FormatException(
               'End date must be on or after start date.',
             );
+            }
           data = {
             'title': value('title'),
             'body': value('body'),
@@ -818,11 +842,13 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
             'ends_on': value('ends_on'),
           };
           if (existing == null)
+            {
             data.addAll({
               'campus_id': s['campus_id'],
               'class_name': campusWide ? null : s['class_name'],
               'kind': widget.kind,
             });
+            }
         case 'homework':
           data = {
             'subject': value('subject'),
@@ -831,25 +857,31 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
             'due_date': value('due_date'),
           };
           if (existing == null)
+            {
             data.addAll({
               'campus_id': s['campus_id'],
               'class_name': s['class_name'],
             });
+            }
         case 'student_results':
           final marks = num.parse(value('marks')),
               total = num.parse(value('total'));
           if (total <= 0 || marks > total)
+            {
             throw const FormatException(
               'Total must be greater than zero and marks cannot exceed it.',
             );
+            }
           data = {'marks': marks, 'total': total, 'remarks': value('remarks')};
           if (existing == null)
+            {
             data.addAll({
               'student_id': s['id'],
               'exam_name': value('exam_name'),
               'subject': value('subject'),
               'exam_date': value('exam_date'),
             });
+            }
         case 'leave_requests':
           final start = DateTime.parse(value('starts_on')),
               end = DateTime.parse(value('ends_on'));
@@ -857,9 +889,11 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
               end.isBefore(start) ||
               end.difference(start).inDays > 90 ||
               value('reason').length < 3)
+            {
             throw const FormatException(
               'Choose today or a future start, an end within 90 days, and a reason of at least 3 characters.',
             );
+            }
           data = {
             'student_id': s['id'],
             'starts_on': value('starts_on'),
@@ -879,11 +913,13 @@ class _SchoolRecordEditorState extends State<SchoolRecordEditor> {
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted)
+        {
         setState(
           () => error = e is FormatException
               ? e.message
               : 'Could not save. Check your details and connection. A matching record may already exist, or your access may have changed.',
         );
+        }
     } finally {
       if (mounted) setState(() => busy = false);
     }

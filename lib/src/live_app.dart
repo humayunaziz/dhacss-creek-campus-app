@@ -100,10 +100,12 @@ class _LoginPageState extends State<LoginPage> {
       );
     } catch (_) {
       if (mounted)
+        {
         setState(
           () => error =
               'Could not sign in. Check your email, password and connection, then try again.',
         );
+        }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -265,11 +267,13 @@ class _SchoolDashboardState extends State<SchoolDashboard> {
       await widget.onLogout();
     } catch (_) {
       if (mounted)
+        {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Could not sign out. Please try again.'),
           ),
         );
+        }
     } finally {
       if (mounted) setState(() => signingOut = false);
     }
@@ -310,7 +314,9 @@ class _SchoolDashboardState extends State<SchoolDashboard> {
       future: data,
       builder: (context, result) {
         if (result.connectionState != ConnectionState.done)
+          {
           return const Center(child: CircularProgressIndicator());
+          }
         if (result.hasError) {
           return Center(
             child: Padding(
@@ -627,10 +633,12 @@ class _SchoolEditorState extends State<SchoolEditor> {
       if (mounted) Navigator.of(context).pop(true);
     } catch (_) {
       if (mounted)
+        {
         setState(
           () => error =
               'Could not save. Check for duplicate details, confirm the parent account exists, and make sure your access is still active.',
         );
+        }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -712,12 +720,16 @@ class _SchoolEditorState extends State<SchoolEditor> {
                       ),
                       validator: (value) {
                         if (requiredText(value) != null)
+                          {
                           return requiredText(value);
+                          }
                         if (linking &&
                             !RegExp(
                               r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
                             ).hasMatch(value!.trim()))
+                          {
                           return 'Enter a valid account UUID';
+                          }
                         return null;
                       },
                     ),

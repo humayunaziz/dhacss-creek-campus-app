@@ -125,7 +125,9 @@ class SupabaseStudentServices implements StudentServices {
       if (table == 'homework' || table == 'school_publications') {
         query = query.eq('campus_id', student['campus_id']);
         if (table == 'homework')
+          {
           query = query.eq('class_name', student['class_name']);
+          }
       } else {
         query = query.eq('student_id', student['id']);
       }
