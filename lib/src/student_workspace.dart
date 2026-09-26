@@ -330,7 +330,9 @@ class _SchoolRecordsPageState extends State<SchoolRecordsPage> {
 
   Future<void> refresh() async {
     final next = widget.services.records(widget.table, widget.student);
-    setState(() => future = next);
+    setState(() {
+      future = next;
+    });
     try {
       await next;
     } catch (_) {}

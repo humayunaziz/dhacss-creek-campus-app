@@ -146,7 +146,10 @@ void main() {
       find.widgetWithText(TextFormField, 'Total marks'),
       '100',
     );
+    tester.testTextInput.hide();
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Save'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
     expect(find.textContaining('marks cannot exceed'), findsOneWidget);
