@@ -19,9 +19,9 @@ insert into public.students(id,campus_id,admission_number,full_name,class_name) 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','90000000-0000-0000-0000-000000000002',true);
 do $$ declare result jsonb; contact uuid; begin
- perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000001','One');
+ perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000001','One','Test Year',current_date-30,current_date+30);
  begin
-  perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000002','One');
+  perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000002','One','Test Year',current_date-30,current_date+30);
   raise exception 'FAIL cross campus teacher assignment';
  exception when insufficient_privilege then null; end;
  result:=public.import_school_rows('parents','[{"campus_code":"__PORTAL_A__","admission_number":"P1","parent_name":"Parent","parent_email":"portal-parent@example.test","phone":"00123"},{"campus_code":"__PORTAL_A__","admission_number":"P2","parent_name":"Pending","parent_email":"portal-unconfirmed@example.test","phone":""}]');
@@ -57,7 +57,7 @@ do $$ declare n integer; begin
   raise exception 'FAIL cross class homework';
  exception when insufficient_privilege then null; end;
  begin
-  perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000001','Two');
+  perform public.assign_teacher('portal-teacher@example.test','91000000-0000-0000-0000-000000000001','Two','Test Year',current_date-30,current_date+30);
   raise exception 'FAIL teacher self escalation';
  exception when insufficient_privilege then null; end;
  update public.students set full_name='Attack' where id='92000000-0000-0000-0000-000000000001';get diagnostics n=row_count;

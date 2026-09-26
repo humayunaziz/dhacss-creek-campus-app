@@ -1,7 +1,7 @@
 name: dhacss_creek_campus_app
-description: A polished, offline-first DHACSS Creek Campus parent app prototype.
+description: Connected DHACSS multi-campus school app with an optional offline demo.
 publish_to: none
-version: 0.2.1+3
+version: 0.3.0+4
 environment:
   sdk: '>=3.8.0 <4.0.0'
 dependencies:

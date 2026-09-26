@@ -6,4 +6,4 @@ if [[ "${ALLOW_DISPOSABLE_DATABASE:-}" != 1 ]]; then
   exit 1
 fi
 cd "$(dirname "$0")"
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f test_bootstrap.sql -f schema.sql -f access_test.sql -f portal.sql -f portal_test.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f test_bootstrap.sql -f schema.sql -f access_test.sql -f portal.sql -f status_year.sql -f portal_test.sql -f status_year_test.sql -f monthly_fees.sql -f monthly_fees_test.sql -f mobile_features.sql -f mobile_features_test.sql

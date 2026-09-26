@@ -28,3 +28,11 @@ test('formula-like values and overlong names are rejected',()=>{
  assert.ok(validateImport('campuses',[['campus_code','campus_name'],['A','=SUM(1)']]).errors.length);
  assert.ok(validateImport('campuses',[['campus_code','campus_name'],['A','X'.repeat(121)]]).errors.length);
 });
+
+test('student status defaults for old templates and validates new uploads',()=>{
+ const old=validateImport('students',parseCsv('campus_code,admission_number,student_name,class_name\nA,01,Child,One'));
+ assert.equal(old.rows[0]['status'],'active');assert.equal(old.errors.length,0);
+ const data='campus_code,admission_number,student_name,class_name,status\nA,01,Child,One,';
+ for(const status of ['active','transferred','suspended','inactive','left'])assert.equal(validateImport('students',parseCsv(data+status)).errors.length,0);
+ assert.ok(validateImport('students',parseCsv(data+'unknown')).errors.length);
+});
