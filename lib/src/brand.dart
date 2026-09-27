@@ -85,7 +85,7 @@ class CampusHero extends StatelessWidget {
           const SizedBox(height: 18),
           FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: CampusColors.mint, foregroundColor: const Color(0xFF006855), minimumSize: const Size(48, 46)), onPressed: action, icon: const Icon(Icons.arrow_forward_rounded, size: 20), label: Text(actionLabel ?? 'Explore campus')),
         ],
-      ]),
+      ])),
     ]),
   );
 }
