@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'backend.dart';
 import 'theme.dart';
+import 'brand.dart';
+import 'widgets.dart' show SectionTitle;
 
 String schoolToday() => DateTime.now()
     .toUtc()
@@ -32,6 +34,38 @@ class StudentWorkspace extends StatefulWidget {
 
 class _StudentWorkspaceState extends State<StudentWorkspace> {
   int tab = 0;
+  late Future<List<Record>> homePublications;
+  @override
+  void initState() {
+    super.initState();
+    homePublications = widget.services.records('school_publications', widget.student);
+  }
+  Future<void> refreshHome() async {
+    final next = widget.services.records('school_publications', widget.student);
+    setState(() { homePublications = next; });
+    try { await next; } catch (_) { /* The home feed displays a retry action. */ }
+  }
+  Widget homeFeed() => FutureBuilder<List<Record>>(
+    future: homePublications,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return const Padding(padding: EdgeInsets.all(20), child: Center(child: CircularProgressIndicator()));
+      }
+      if (snapshot.hasError) {
+        return Card(child: ListTile(title: const Text('School updates could not load'), trailing: TextButton(onPressed: refreshHome, child: const Text('Retry'))));
+      }
+      final rows = (snapshot.data ?? []).where((r) => r['class_name'] == null || r['class_name'] == widget.student['class_name']).toList()
+        ..sort((a,b) => '${b['created_at']}'.compareTo('${a['created_at']}'));
+      final timetable = rows.where((r) => r['kind'] == 'timetable').firstOrNull;
+      final notice = rows.where((r) => r['kind'] == 'notice' || r['kind'] == 'event').firstOrNull;
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        SectionTitle('Your school schedule', action: 'View all', onTap: () => open('Timetable', 'school_publications', kind: 'timetable')),
+        tile(timetable?['title'] as String? ?? 'Timetable', timetable?['body'] as String? ?? 'No timetable published for this class yet.', Icons.calendar_month_rounded, CampusColors.sky, () => open('Timetable', 'school_publications', kind: 'timetable')),
+        SectionTitle('School updates', action: 'View all', onTap: () => setState(() => tab = 3)),
+        tile(notice?['title'] as String? ?? 'Latest announcements', notice?['body'] as String? ?? 'New school notices and events will appear here.', Icons.campaign_rounded, CampusColors.rose, () => open(notice?['kind'] == 'event' ? 'School calendar' : 'School notices', 'school_publications', kind: notice?['kind'] as String? ?? 'notice')),
+      ]);
+    },
+  );
   bool get staff => widget.isAdmin || widget.canTeach;
   void open(String title, String table, {String? kind}) =>
       Navigator.of(context).push(
@@ -48,28 +82,23 @@ class _StudentWorkspaceState extends State<StudentWorkspace> {
           ),
         ),
       );
-  Widget tile(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color color,
-    VoidCallback action,
-  ) => Card(
-    color: color,
+  Widget tile(String title, String subtitle, IconData icon, Color color, VoidCallback action) => Card(
+    color: color.withValues(alpha: .65),
     child: ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      leading: Icon(icon, color: CampusColors.ink),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      subtitle: Text(subtitle),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: action,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      leading: Container(width: 48, height: 48, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)), child: Icon(icon, color: accentFor(color), size: 28)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, color: CampusColors.ink)),
+      subtitle: Text(subtitle, maxLines: 3, overflow: TextOverflow.ellipsis),
+      trailing: Icon(Icons.chevron_right_rounded, color: accentFor(color)), onTap: action,
     ),
   );
   @override
   Widget build(BuildContext context) {
     final s = widget.student;
     return Scaffold(
-      appBar: AppBar(title: Text(s['full_name'] as String)),
+      appBar: AppBar(toolbarHeight: 76, title: CampusBrand(campus: widget.campus), actions: [
+        IconButton(tooltip: 'School notices', onPressed: () => open('School notices', 'school_publications', kind: 'notice'), icon: const Icon(Icons.notifications_none_rounded)),
+      ]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: tab,
         onDestinationSelected: (v) => setState(() => tab = v),
@@ -94,64 +123,28 @@ class _StudentWorkspaceState extends State<StudentWorkspace> {
         padding: const EdgeInsets.all(20),
         children: [
           if (tab == 0) ...[
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: CampusColors.teal,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'YOUR SCHOOL DAY',
-                    style: TextStyle(color: Colors.white70, letterSpacing: 2),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Hello, ${s['full_name']}',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.copyWith(color: Colors.white),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${widget.campus}\n${s['class_name']}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            tile(
-              'Attendance',
-              'Recorded attendance and monthly summary',
-              Icons.fact_check_outlined,
-              CampusColors.mint,
-              () => open('Attendance', 'attendance'),
-            ),
-            tile(
-              'Homework',
-              'Assignments and due dates',
-              Icons.edit_note,
-              CampusColors.lavender,
-              () => open('Homework', 'homework'),
-            ),
-            tile(
-              'Monthly fees',
-              'Your school’s generated bills',
-              Icons.receipt_long_outlined,
-              CampusColors.peach,
-              () => open('Monthly fees', 'monthly_fee_bills'),
-            ),
-            tile(
-              'School notices',
-              'Latest announcements',
-              Icons.campaign_outlined,
-              CampusColors.mint,
-              () =>
-                  open('School notices', 'school_publications', kind: 'notice'),
-            ),
+            CampusHero(title: 'Hello, ${s['full_name']}!', subtitle: '${widget.campus}\n${s['class_name']}', eyebrow: 'YOUR SCHOOL DAY', actionLabel: 'My profile', action: () => setState(() => tab = 4), showCampus: widget.campus.toLowerCase().contains('creek')),
+            SectionTitle('At your fingertips', action: 'View all', onTap: () => setState(() => tab = 1)),
+            LayoutBuilder(builder: (context, constraints) {
+              final columns = constraints.maxWidth < 310 || MediaQuery.textScalerOf(context).scale(14) > 20 ? 2 : 4;
+              final actions = <(String, IconData, Color, VoidCallback)>[
+                ('Attendance', Icons.event_available_rounded, CampusColors.mint, () => open('Attendance', 'attendance')),
+                ('Timetable', Icons.calendar_month_rounded, CampusColors.lavender, () => open('Timetable', 'school_publications', kind: 'timetable')),
+                ('Homework', Icons.edit_note_rounded, CampusColors.peach, () => open('Homework', 'homework')),
+                ('Fees', Icons.account_balance_wallet_rounded, CampusColors.rose, () => open('Monthly fees', 'monthly_fee_bills')),
+                ('Results', Icons.emoji_events_rounded, CampusColors.sunshine, () => open('Results', 'student_results')),
+                ('Transport', Icons.directions_bus_rounded, CampusColors.sky, () => open('Transport', 'school_publications', kind: 'transport')),
+                ('Leave', Icons.event_note_rounded, CampusColors.mint, () => open('Leave requests', 'leave_requests')),
+                ('Messages', Icons.forum_rounded, CampusColors.lavender, () => open('Messages', 'school_messages')),
+              ];
+              return Wrap(spacing: 12, runSpacing: 12, children: [
+                for (final a in actions) SizedBox(width: (constraints.maxWidth - 12 * (columns - 1)) / columns, child: CampusShortcut(title: a.$1, icon: a.$2, color: a.$3, onTap: a.$4)),
+              ]);
+            }),
+            const SizedBox(height: 18),
+            tile('Exam schedule', 'Dates and examination instructions', Icons.assignment_rounded, CampusColors.sky, () => open('Exam schedule', 'school_publications', kind: 'exam')),
+            homeFeed(),
+            Align(alignment: Alignment.centerRight, child: TextButton.icon(onPressed: refreshHome, icon: const Icon(Icons.refresh, size: 18), label: const Text('Refresh school updates'))),
           ],
           if (tab == 1) ...[
             Text(

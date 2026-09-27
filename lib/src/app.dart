@@ -3,6 +3,7 @@ import 'data.dart';
 import 'screens.dart';
 import 'theme.dart';
 import 'widgets.dart';
+import 'brand.dart';
 
 class CreekCampusApp extends StatefulWidget {
   const CreekCampusApp({super.key});
@@ -28,23 +29,9 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(body: SafeArea(child: PageContent(children: [
     const SizedBox(height: 24),
-    const Row(children: [IconTile(Icons.school_rounded, size: 56), SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('DHACSS', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: 2)),
-      Text('CREEK CAMPUS', style: TextStyle(fontSize: 11, letterSpacing: 2.2)),
-    ]))]),
-    const SizedBox(height: 32),
-    Container(
-      constraints: const BoxConstraints(minHeight: 240),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(36), gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF174B46), Color(0xFF398B7C)])),
-      child: Stack(children: [
-        Positioned(right: -32, top: -30, child: Container(width: 200, height: 200, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .07)))),
-        const Positioned(right: 28, bottom: 34, child: Icon(Icons.school_outlined, size: 140, color: Color(0xFFB6D6B8))),
-        const Padding(padding: EdgeInsets.all(28), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          StatusPill('GROW. LEARN. BELONG.'), SizedBox(height: 48),
-          Text('A little closer\nto their world.', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, height: 1.15, color: Colors.white)),
-        ])),
-      ]),
-    ),
+    const CampusBrand(),
+    const SizedBox(height: 24),
+    CampusHero(title: 'A little closer\nto their world.', subtitle: 'Stronger school. Brighter tomorrows.', actionLabel: 'Explore now', action: () => openPage(context, const CampusInfoPage())),
     const SizedBox(height: 28),
     Text('School life,\nbeautifully connected.', style: Theme.of(context).textTheme.headlineLarge),
     const SizedBox(height: 14),
@@ -79,10 +66,7 @@ class _CampusShellState extends State<CampusShell> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 76,
-        title: const Row(children: [IconTile(Icons.school_rounded, size: 40), SizedBox(width: 10), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('DHACSS', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.7)),
-          Text('CREEK CAMPUS', style: TextStyle(fontSize: 9, letterSpacing: 1.8)),
-        ])]),
+        title: const CampusBrand(),
         actions: [IconButton(tooltip: 'Notifications', onPressed: () => openPage(context, const NotificationsPage()), icon: const Badge(smallSize: 7, child: Icon(Icons.notifications_none_rounded))), const SizedBox(width: 8)],
       ),
       body: SafeArea(child: pages[tab]),
@@ -143,14 +127,7 @@ class Dashboard extends StatelessWidget {
         const Icon(Icons.unfold_more_rounded),
       ])),
       const SizedBox(height: 16),
-      CampusCard(color: CampusColors.ink, child: Row(children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('EVERY DAY, A NEW POSSIBILITY', style: TextStyle(color: Color(0xFFBFD7C5), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
-          const SizedBox(height: 12),
-          const Text('Little steps.\nBright futures.', style: TextStyle(fontSize: 29, height: 1.12, fontWeight: FontWeight.w800, color: Colors.white)),
-          const SizedBox(height: 16),
-          TextButton.icon(style: TextButton.styleFrom(foregroundColor: Colors.white, padding: EdgeInsets.zero), onPressed: () => openPage(context, const CampusInfoPage()), label: const Text('Discover our campus'), icon: const Icon(Icons.arrow_forward_rounded, size: 18)),
-        ])),
+      CampusHero(title: 'Little steps.\nBright futures.', subtitle: 'Every day is a new opportunity to learn and grow.', actionLabel: 'Discover our campus', action: () => openPage(context, const CampusInfoPage())),
         const SizedBox(width: 8),
         const Icon(Icons.local_florist_outlined, color: Color(0xFFCDE0A7), size: 76),
       ])),

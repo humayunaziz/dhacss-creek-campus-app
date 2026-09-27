@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'backend.dart';
 import 'theme.dart';
+import 'brand.dart';
 import 'student_workspace.dart';
 
 class SchoolApp extends StatelessWidget {
@@ -124,23 +125,14 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(
-                    Icons.school_rounded,
-                    size: 64,
-                    color: CampusColors.teal,
-                  ),
+                  const CampusBrand(),
                   const SizedBox(height: 24),
-                  Text(
-                    'DHACSS Connect',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
+                  const CampusHero(title: 'A little closer\nto their world.', subtitle: 'DHACSS Connect', eyebrow: 'LEARN. GROW. BELONG.'),
+                  const SizedBox(height: 28),
+                  Text('Welcome back', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Your school community, together.',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
+                  const Text('Sign in to your school account.', style: TextStyle(color: CampusColors.muted)),
+                  const SizedBox(height: 24),
                   if (widget.message != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -296,7 +288,8 @@ class _SchoolDashboardState extends State<SchoolDashboard> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('DHACSS Connect'),
+      toolbarHeight: 76,
+      title: const CampusBrand(campus: 'SCHOOL WORKSPACE'),
       actions: [
         IconButton(
           tooltip: 'Refresh',

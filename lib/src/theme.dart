@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
 abstract final class CampusColors {
-  static const ink = Color(0xFF173D3B);
-  static const teal = Color(0xFF13786E);
-  static const canvas = Color(0xFFF5F6F2);
-  static const mint = Color(0xFFE3F2E9);
-  static const lavender = Color(0xFFEDE8F7);
-  static const peach = Color(0xFFFFEEE0);
-  static const muted = Color(0xFF687977);
+  static const ink = Color(0xFF092A4D);
+  static const teal = Color(0xFF008D79);
+  static const canvas = Color(0xFFF3FBFF);
+  static const mint = Color(0xFFDCF9ED);
+  static const lavender = Color(0xFFF0E7FC);
+  static const peach = Color(0xFFFFEEDB);
+  static const sky = Color(0xFFE1F3FF);
+  static const rose = Color(0xFFFFE7EF);
+  static const sunshine = Color(0xFFFFF7D7);
+  static const blue = Color(0xFF008DDE);
+  static const muted = Color(0xFF586878);
 }
 
 ThemeData campusTheme() => ThemeData(
@@ -48,7 +52,23 @@ ThemeData campusTheme() => ThemeData(
       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
     ),
   ),
-  navigationBarTheme: const NavigationBarThemeData(
+  cardTheme: CardThemeData(
+    elevation: 0,
+    color: Colors.white,
+    margin: const EdgeInsets.symmetric(vertical: 6),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+  ),
+  navigationBarTheme: NavigationBarThemeData(
+    elevation: 0,
+    surfaceTintColor: Colors.transparent,
+    iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+      color: states.contains(WidgetState.selected) ? CampusColors.teal : CampusColors.muted,
+      size: 27,
+    )),
+    labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
+      color: states.contains(WidgetState.selected) ? CampusColors.teal : CampusColors.muted,
+      fontSize: 12, fontWeight: states.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w500,
+    )),
     backgroundColor: Colors.white,
     indicatorColor: CampusColors.mint,
     height: 76,

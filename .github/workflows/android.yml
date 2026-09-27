@@ -40,7 +40,13 @@ jobs:
       - name: Static analysis
         run: flutter analyze
       - name: Unit and widget tests
-        run: flutter test --coverage
+        run: flutter test --coverage --update-goldens
+      - name: Upload mobile layout previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-layout-previews
+          path: test/goldens/*.png
       - name: Build mobile web client
         run: flutter build web --dart-define-from-file=config/supabase.json
       - name: Upload web portal
