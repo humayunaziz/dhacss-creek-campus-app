@@ -49,7 +49,7 @@ ThemeData campusTheme() => ThemeData(
     style: FilledButton.styleFrom(
       minimumSize: const Size(48, 54),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+      textStyle: const TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w700),
     ),
   ),
   cardTheme: CardThemeData(

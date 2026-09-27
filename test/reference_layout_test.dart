@@ -25,7 +25,7 @@ void main() {
     await tester.runAsync(CampusArtwork.prepare);
     final service = FakeServices();
     await tester.pumpWidget(MaterialApp(debugShowCheckedModeBanner: false, theme: campusTheme(), home: StudentWorkspace(
-      services: service, student: student, campus: 'Creek Campus', isAdmin: false, canTeach: false, isFamily: true,
+      services: service, student: {...student, 'full_name': 'Ahmed', 'class_name': 'Class 6'}, campus: 'Creek Campus', isAdmin: false, canTeach: false, isFamily: true,
     )));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
