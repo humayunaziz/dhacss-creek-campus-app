@@ -29,6 +29,8 @@ void main() {
     await tester.pumpWidget(const SchoolApp());
     expect(find.textContaining('not connected'), findsOneWidget);
     expect(find.text('Sign in'), findsNothing);
+    await tester.ensureVisible(find.text('Explore offline demo'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Explore offline demo'));
     await tester.pumpAndSettle();
     expect(find.text('Offline demo'), findsOneWidget);

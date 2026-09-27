@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme.dart';
+import 'brand.dart';
 
 class CampusCard extends StatelessWidget {
   const CampusCard({super.key, required this.child, this.color = Colors.white, this.padding = const EdgeInsets.all(20), this.onTap});
@@ -40,7 +41,7 @@ class IconTile extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: size, height: size,
     decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)),
-    child: Icon(icon, color: CampusColors.ink, size: size * .48),
+    child: Icon(icon, color: accentFor(color), size: size * .48),
   );
 }
 

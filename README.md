@@ -1,11 +1,6 @@
-# DHACSS Connect — multi-campus Flutter app
+# DHACSS Connect — connected mobile school app
 
-The app includes an offline demonstration and the first connected school workflow.
-The connected workflow supports email/password login, head-office campus creation,
-campus-scoped student creation, linking an existing parent account to a student,
-and the parent's actual linked-child dashboard. The same Flutter app runs on Android
-and web. Attendance, fees, homework, messages, transport, and payments remain demo-only;
-the connected dashboard does not invent information for those features.
+See `MOBILE_RELEASE_NOTES.md` for the 0.3.0 feature list, operator steps and remaining integrations.
 
 ## First hosted setup
 

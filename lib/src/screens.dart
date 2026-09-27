@@ -3,6 +3,7 @@ import 'app.dart' show LessonRow, showStudentPicker;
 import 'data.dart';
 import 'theme.dart';
 import 'widgets.dart';
+import 'brand.dart';
 
 class AcademicsPage extends StatelessWidget {
   const AcademicsPage({super.key, required this.state});
@@ -324,7 +325,7 @@ class CampusInfoPage extends StatelessWidget {
   const CampusInfoPage({super.key});
   @override
   Widget build(BuildContext context) => DetailPage(title: 'Explore Creek Campus', children: [
-    CampusCard(color: CampusColors.ink, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Icon(Icons.school_outlined, size: 64, color: Color(0xFFCADEB2)), const SizedBox(height: 24), Text('A place to learn.\nA place to belong.', style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)), const SizedBox(height: 12), const Text('DHACSS Creek Campus', style: TextStyle(color: Colors.white70))])),
+    const CampusHero(title: 'A place to learn.\nA place to belong.', subtitle: 'DHACSS Creek Campus'),
     const SectionTitle('A world of possibilities'),
     const CampusCard(child: Column(children: [
       ListTile(contentPadding: EdgeInsets.zero, leading: IconTile(Icons.auto_stories_outlined, color: CampusColors.lavender), title: Text('Learning & discovery'), subtitle: Text('Space for academic updates and classroom stories.')),
