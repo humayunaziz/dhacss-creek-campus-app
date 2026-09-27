@@ -128,9 +128,6 @@ class Dashboard extends StatelessWidget {
       ])),
       const SizedBox(height: 16),
       CampusHero(title: 'Little steps.\nBright futures.', subtitle: 'Every day is a new opportunity to learn and grow.', actionLabel: 'Discover our campus', action: () => openPage(context, const CampusInfoPage())),
-        const SizedBox(width: 8),
-        const Icon(Icons.local_florist_outlined, color: Color(0xFFCDE0A7), size: 76),
-      ])),
       const SizedBox(height: 16),
       Row(children: [
         Expanded(child: CampusCard(color: CampusColors.mint, padding: const EdgeInsets.all(16), onTap: () => openPage(context, AttendancePage(state: state)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Icon(Icons.check_circle_outline_rounded, size: 22), const SizedBox(height: 12), Text('${student.attendance}%', style: Theme.of(context).textTheme.headlineMedium), const Text('Attendance', style: TextStyle(fontSize: 12))]))),
