@@ -8,6 +8,7 @@ import 'theme.dart';
 class CampusArtwork extends StatelessWidget {
   const CampusArtwork({super.key, this.crest = false});
   final bool crest;
+  static ui.Image? _decoded;
   static final Future<ui.Image> _image = _load();
   static Future<void> prepare() async { await _image; }
   static Future<ui.Image> _load() async {
@@ -15,10 +16,13 @@ class CampusArtwork extends StatelessWidget {
     final codec = await ui.instantiateImageCodec(bytes.buffer.asUint8List());
     final frame = await codec.getNextFrame();
     codec.dispose();
+    _decoded = frame.image;
     return frame.image;
   }
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(child: FutureBuilder<ui.Image>(
+  Widget build(BuildContext context) => ExcludeSemantics(child: _decoded != null
+      ? CustomPaint(painter: _ArtworkPainter(_decoded!, crest), size: Size.infinite)
+      : FutureBuilder<ui.Image>(
     future: _image,
     builder: (context, snapshot) => snapshot.hasData
         ? CustomPaint(painter: _ArtworkPainter(snapshot.data!, crest), size: Size.infinite)
